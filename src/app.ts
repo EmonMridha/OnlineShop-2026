@@ -1,6 +1,7 @@
 import express from "express";
 import cors from 'cors';
 import { prisma } from "./lib/prisma.js";
+import { userRoutes } from "./modules/users/user.router.js";
 
 const app = express();
 
@@ -29,5 +30,7 @@ app.get('/text-db', async (req, res) => {
         })
     }
 })
+
+app.use('/api/auth/admin', userRoutes)
 
 export default app;
