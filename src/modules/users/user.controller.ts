@@ -19,12 +19,30 @@ const createAdmin = catchAsync(async (req: Request, res: Response) => {
 const loginAdmin = catchAsync(async (req: Request, res: Response) => {
     const payload = await req.body;
 
-    const result = await userService.loginAdmin(payload);
+    const { accessToken, refreshToken, admin } = await userService.loginAdmin(payload);
+
+    // sending the accessToken to cookies
+    res.cookie('accessToken', accessToken,
+        {
+            httpOnly: true,
+            secure: false,
+            sameSite: "none",
+            maxAge: 1000 * 6
+        }
+    )
+
+    // sending the refreshToken to the cookies
+    res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    });
 
     res.status(httpStatus.OK).json({
         success: true,
         message: "Admin Logged in Successfully",
-        data: result
+        data: { admin, accessToken, refreshToken }
     })
 })
 
