@@ -1,5 +1,7 @@
+import { SignOptions } from "jsonwebtoken";
 import config from "../../config/index.js";
 import { prisma } from "../../lib/prisma.js";
+import { jwtUtils } from "../../utils/jwt.js";
 import { IAdmin } from "./user.interface.js";
 import bcrypt from 'bcrypt'
 
@@ -53,12 +55,28 @@ const loginAdmin = async (payload: { email: string, password: string }) => {
         throw new Error('Password is incorrect')
     }
 
-    const result = await prisma.admin.findUniqueOrThrow({
-        where: { email },
-        omit: { passwordHash: true }
-    })
+    const jwtPayload = {
+        id: admin.id,
+        name: admin.name,
+        email: admin.email,
+        role: "ADMIN"
+    }
 
-    return result;
+    // Creating Access token
+    const accessToken = jwtUtils.createToken(
+        jwtPayload,
+        config.jwt_access_secret,
+        config.jwt_access_expires_in as SignOptions
+    )
+
+    // Creating refresh token 
+    const refreshToken = jwtUtils.createToken(
+        jwtPayload,
+        config.jwt_refresh_secret,
+        config.jwt_refresh_expires_in as SignOptions
+    )
+
+    return { admin, accessToken, refreshToken };
 
 }
 
