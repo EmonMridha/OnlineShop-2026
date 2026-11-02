@@ -19,13 +19,32 @@ const createProduct = async (payload: IProduct) => {
     return result;
 }
 
-const getAllProducts = async() => {
+const getAllProducts = async () => {
     const result = await prisma.product.findMany();
+
+    if (result.length === 0) {
+        throw new Error("No products found")
+    }
 
     return result;
 }
 
+const getSingleProduct = async () => {
+
+}
+
+const updateProduct = async () => {
+
+}
+
+const deleteProduct = async () => {
+
+}
+
 export const productService = {
     createProduct,
-    getAllProducts
+    getAllProducts,
+    getSingleProduct,
+    updateProduct,
+    deleteProduct
 }

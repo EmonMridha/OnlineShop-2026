@@ -8,7 +8,7 @@ import { prisma } from "../lib/prisma.js"
 
 export const auth = (...requiredRoles: Role[]) => {
     return catchAsync(async (req: Request, res: Response, next: Function) => {
-        const accessToken = req.cookies.accessToken ? req.cookies.accessToken : req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization?.split(" ")[1] : req.headers.authorization
+        const accessToken = req.cookies.accessToken ? req.cookies.accessToken : req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization?.split(" ")[1] : req.headers.authorization // getting accessToken from cookies or headers
 
         if (!accessToken) {
             throw new Error("Your are not logged in. Please login first")
@@ -26,19 +26,10 @@ export const auth = (...requiredRoles: Role[]) => {
             throw new Error("Forbidden. You don't have permission to access this route")
         }
 
-        let user
-
-        if (role === "ADMIN") {
-            user = await prisma.user.findUnique({ where: { id } })
-        }
-
-        if (role === "CUSTOMER") {
-            user = await prisma.user.findUnique({ where: { id } })
-        }
-
-        if (!user) {
-            throw new Error("User not found")
-        }
+        const user = await prisma.user.findUniqueOrThrow({
+            where: { id },
+            omit: { passwordHash: true }
+        })
 
         // inserting token owner info into the request so that it can be used later
         req.user = {

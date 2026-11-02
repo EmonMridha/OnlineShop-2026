@@ -27,7 +27,7 @@ const loginAdmin = catchAsync(async (req: Request, res: Response) => {
             httpOnly: true,
             secure: false,
             sameSite: "none",
-            maxAge: 1000 * 6
+            maxAge:  60 * 60 * 1000
         }
     )
 
