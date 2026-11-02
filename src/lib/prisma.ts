@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "dotenv/config"; // This line reads the .env file and loads all the variables from .env files
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../generated/prisma/client.js";
 

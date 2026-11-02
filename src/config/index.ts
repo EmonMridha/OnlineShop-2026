@@ -1,3 +1,5 @@
+import "dotenv/config"; // this line reads the .env file and loads the variables into node.js's process.env
+
 export default {
     port: process.env.PORT || 3000,
     database_url: process.env.DATABASE_URL,

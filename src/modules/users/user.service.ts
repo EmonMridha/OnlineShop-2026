@@ -5,22 +5,22 @@ import { jwtUtils } from "../../utils/jwt.js";
 import { IAdmin } from "./user.interface.js";
 import bcrypt from 'bcrypt'
 
-// creating admin
-const createAdmin = async (payload: IAdmin) => {
+// creating user
+const createUser = async (payload: IAdmin) => {
     const { name, email, password } = payload;
 
     const hashedPassword = await bcrypt.hash(password, Number(config.bcrypt_salt_rounds))
 
-    const isExists = await prisma.admin.findUnique({
+    const isExists = await prisma.user.findUnique({
         where: { email }
     })
 
     if (isExists) {
-        throw new Error('This admin already exists. Login instead')
+        throw new Error('This user already exists. Login instead')
     } // when error will be thrown the returned promise will be rejected and the following code will not be executed
 
     // creating admin in database
-    await prisma.admin.create({
+    await prisma.user.create({
         data: {
             name,
             email,
@@ -30,36 +30,35 @@ const createAdmin = async (payload: IAdmin) => {
 
     const user = await prisma.user.findUnique({
         where: { email },
-        omit: { password: true }
+        omit: { passwordHash: true }
     })
 
     return user
 }
 
-// admin login
-const loginAdmin = async (payload: { email: string, password: string }) => {
+// user login
+const loginUser = async (payload: { email: string, password: string }) => {
     const { email, password } = payload;
 
-    const admin = await prisma.admin.findUniqueOrThrow({
-        where: { email },
-
+    const user = await prisma.user.findUniqueOrThrow({
+        where: { email }
     })
 
-    if (!admin) {
-        throw new Error("Admin does not exists, Please register first")
+    if (!user) {
+        throw new Error("user does not exists, Please register first")
     }
 
-    const isPasswordMatched = await bcrypt.compare(password, admin.passwordHash)
+    const isPasswordMatched = await bcrypt.compare(password, user.passwordHash)
 
     if (!isPasswordMatched) {
         throw new Error('Password is incorrect')
     }
 
     const jwtPayload = {
-        id: admin.id,
-        name: admin.name,
-        email: admin.email,
-        role: "ADMIN"
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
     }
 
     // Creating Access token
@@ -76,11 +75,20 @@ const loginAdmin = async (payload: { email: string, password: string }) => {
         config.jwt_refresh_expires_in as SignOptions
     )
 
-    return { admin, accessToken, refreshToken };
+    return { user, accessToken, refreshToken };
+}
 
+const getMyProfile = async (userId: string) => {
+    const result = await prisma.user.findUniqueOrThrow({
+        where: { id: userId },
+        omit: { passwordHash: true }
+    })
+
+    return result
 }
 
 export const userService = {
-    createAdmin,
-    loginAdmin
+    createUser,
+    loginUser,
+    getMyProfile
 }

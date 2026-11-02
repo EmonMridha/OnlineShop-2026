@@ -29,7 +29,7 @@ export const auth = (...requiredRoles: Role[]) => {
         let user
 
         if (role === "ADMIN") {
-            user = await prisma.admin.findUnique({ where: { id } })
+            user = await prisma.user.findUnique({ where: { id } })
         }
 
         if (role === "CUSTOMER") {

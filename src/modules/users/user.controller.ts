@@ -7,10 +7,10 @@ import httpStatus from 'http-status'
 const createAdmin = catchAsync(async (req: Request, res: Response) => {
     const payload = await req.body; // getting the data from the req
 
-    const result = await userService.createAdmin(payload);
+    const result = await userService.createUser(payload);
 
     res.status(httpStatus.CREATED).json({
-        message: "Admin Registered Successfully",
+        message: "User Registered Successfully",
         success: true,
         data: result
     })
@@ -19,7 +19,7 @@ const createAdmin = catchAsync(async (req: Request, res: Response) => {
 const loginAdmin = catchAsync(async (req: Request, res: Response) => {
     const payload = await req.body;
 
-    const { accessToken, refreshToken, admin } = await userService.loginAdmin(payload);
+    const { user, accessToken, refreshToken } = await userService.loginUser(payload);
 
     // sending the accessToken to cookies
     res.cookie('accessToken', accessToken,
@@ -41,12 +41,24 @@ const loginAdmin = catchAsync(async (req: Request, res: Response) => {
 
     res.status(httpStatus.OK).json({
         success: true,
-        message: "Admin Logged in Successfully",
-        data: { admin, accessToken, refreshToken }
+        message: "User Logged in Successfully",
+        data: { user, accessToken, refreshToken }
+    })
+})
+
+const getMyProfile = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?.id
+    const result = await userService.getMyProfile(userId as string);
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "Current user data retrieved successfully!",
+        data: result
     })
 })
 
 export const userController = {
     createAdmin,
-    loginAdmin
+    loginAdmin,
+    getMyProfile
 }
