@@ -2,6 +2,7 @@ import express from "express";
 import cors from 'cors';
 import { prisma } from "./lib/prisma.js";
 import { userRoutes } from "./modules/users/user.router.js";
+import { productRoutes } from "./modules/products/product.routes.js";
 
 const app = express();
 
@@ -12,25 +13,7 @@ app.get('/', (req, res) => {
     res.send("Bulbul bhai shop api is running")
 })
 
-app.get('/text-db', async (req, res) => {
-    try {
-
-        const products = await prisma.product.findMany();
-
-        res.json({
-            success: true,
-            message: "Database connected successfully",
-            products
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            success: false,
-            message: "Database connection failed"
-        })
-    }
-})
-
 app.use('/api/auth/admin', userRoutes)
+app.use('/api/products', productRoutes)
 
 export default app;
