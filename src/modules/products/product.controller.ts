@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync.js";
 import { productService } from "./product.service.js";
 import httpStatus from 'http-status'
+import { Param } from "@prisma/client/runtime/client";
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
 
@@ -26,7 +27,19 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
+const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
+    const productId = req.params.id;
+    const result = await productService.getSingleProduct(productId as string)
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "Single Product data retrieved successfully",
+        data: result
+    })
+})
+
 export const productController = {
     createProduct,
-    getAllProducts
+    getAllProducts,
+    getSingleProduct
 }

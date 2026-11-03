@@ -29,8 +29,15 @@ const getAllProducts = async () => {
     return result;
 }
 
-const getSingleProduct = async () => {
+const getSingleProduct = async (id: string) => {
 
+    const result = prisma.product.findUniqueOrThrow({
+        where: {
+            id
+        }
+    })
+
+    return result;
 }
 
 const updateProduct = async () => {

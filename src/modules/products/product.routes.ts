@@ -8,5 +8,6 @@ const router = Router();
 
 router.post('/', auth("ADMIN"), validateRequest(productValidation.createProductSchema), productController.createProduct)
 router.get('/', productController.getAllProducts)
+router.get('/:id', productController.getSingleProduct)
 
 export const productRoutes = router
