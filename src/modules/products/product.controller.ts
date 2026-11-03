@@ -3,6 +3,7 @@ import { catchAsync } from "../../utils/catchAsync.js";
 import { productService } from "./product.service.js";
 import httpStatus from 'http-status'
 import { Param } from "@prisma/client/runtime/client";
+import { success } from "zod";
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
 
@@ -51,9 +52,21 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
+const deleteProduct = catchAsync(async (req: Request, res: Response) => {
+    const productId = req.params.id;
+    const result = await productService.deleteProduct(productId as string)
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "Product deleted successfully",
+        data: "null"
+    })
+})
+
 export const productController = {
     createProduct,
     getAllProducts,
     getSingleProduct,
-    updateProduct
+    updateProduct,
+    deleteProduct
 }

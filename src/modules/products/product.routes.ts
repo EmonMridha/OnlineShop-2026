@@ -10,5 +10,6 @@ router.post('/', auth("ADMIN"), validateRequest(productValidation.createProductS
 router.get('/', productController.getAllProducts)
 router.get('/:id', productController.getSingleProduct)
 router.patch('/:id', auth("ADMIN"), validateRequest(productValidation.updateProductSchema), productController.updateProduct)
+router.delete("/:id", auth('ADMIN'), productController.deleteProduct)
 
 export const productRoutes = router
