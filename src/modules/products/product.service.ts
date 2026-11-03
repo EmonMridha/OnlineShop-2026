@@ -31,9 +31,10 @@ const getAllProducts = async () => {
 
 const getSingleProduct = async (id: string) => {
 
-    const result = prisma.product.findUniqueOrThrow({
+    const result = await prisma.product.findUniqueOrThrow({
         where: {
-            id
+            id,
+            isActive: true
         }
     })
 
@@ -69,8 +70,11 @@ const deleteProduct = async (id: string) => {
     }
 
     // delete product 
-    await prisma.product.delete({
-        where: { id }
+    await prisma.product.update({
+        where: { id },
+        data: {
+            isActive: false
+        }
     })
 
     return;
