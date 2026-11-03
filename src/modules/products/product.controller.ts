@@ -38,8 +38,22 @@ const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
+const updateProduct = catchAsync(async (req: Request, res: Response) => {
+    const productId = req.params.id;
+    const payload = req.body;
+
+    const result = await productService.updateProduct(productId as string, payload);
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "Product updated successfully",
+        data: result
+    })
+})
+
 export const productController = {
     createProduct,
     getAllProducts,
-    getSingleProduct
+    getSingleProduct,
+    updateProduct
 }

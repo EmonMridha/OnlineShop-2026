@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
-import { IProduct } from "./product.interface.js";
+import { IProduct, UProduct } from "./product.interface.js";
 
 // Post product 
 const createProduct = async (payload: IProduct) => {
@@ -40,8 +40,23 @@ const getSingleProduct = async (id: string) => {
     return result;
 }
 
-const updateProduct = async () => {
+const updateProduct = async (id: string, payload: UProduct) => {
+    if (!id) {
+        throw new Error("Product id is required")
+    }
 
+    const product = await prisma.product.findUniqueOrThrow({ where: { id } })
+
+    if (!product) {
+        throw new Error("Product not found")
+    }
+
+    const result = await prisma.product.update({
+        where: { id },
+        data: payload
+    })
+
+    return result;
 }
 
 const deleteProduct = async () => {

@@ -7,3 +7,11 @@ export interface IProduct {
     imageURL: string;
     stock?: number;
 }
+export interface UProduct {
+    name?: string
+    description?: string;
+    price?: number;
+    imageURL?: string;
+    stock?: number;
+}
+
