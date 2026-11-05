@@ -1,6 +1,5 @@
 import express from "express";
 import cors from 'cors';
-import { prisma } from "./lib/prisma.js";
 import { userRoutes } from "./modules/users/user.router.js";
 import { productRoutes } from "./modules/products/product.routes.js";
 import cookieParser from "cookie-parser";

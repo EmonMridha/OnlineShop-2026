@@ -4,6 +4,7 @@ import httpStatus from "http-status"
 
 const createOrder = catchAsync(async (req, res) => {
     const payload = req.body;
+    console.log("Payload received in orderController:", payload); // Log the payload to check its structure
 
     const result = await orderService.createOrder(payload);
 

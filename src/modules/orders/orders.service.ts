@@ -3,7 +3,7 @@ import { ICreateOrder } from "./orders.interface.js"
 
 const createOrder = async (order: ICreateOrder) => {
 
-    const productIds = order.items.map(i => i.productId) // getting product ids ordered by the customer. here each product can be ordered multiple times 
+    const productIds = order.items.map(i => i.productId) // getting product ids ordered by the customer. here each product can be ordered multiple times
 
     // fetching the products from the database that the customer has ordered
     const products = await prisma.product.findMany({
