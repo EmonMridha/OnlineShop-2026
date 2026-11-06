@@ -18,5 +18,8 @@ app.get('/', (req, res) => {
 app.use('/api/auth', userRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/orders', orderRoutes)
+app.get('/api/order-test', (req, res) => {
+    res.json({ message: "Order test route is working!" });
+});
 
 export default app;
