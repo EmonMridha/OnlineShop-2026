@@ -15,6 +15,16 @@ const createOrder = catchAsync(async (req, res) => {
     })
 })
 
+const getOrders = catchAsync(async (req, res) => {
+    const result = await orderService.getOrders()
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: 'All order retrieved successfully',
+        data: result
+    })
+})
+
 export const orderController = {
-    createOrder
+    createOrder,
+    getOrders
 }
