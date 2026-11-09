@@ -3,30 +3,29 @@ import { ICreateOrder } from "./orders.interface.js"
 
 const createOrder = async (order: ICreateOrder) => {
 
-    const productIds = order.items.map(i => i.productId) // getting product ids ordered by the customer. 
-
-    // fetching the products from the database that the customer has ordered
-    const products = await prisma.product.findMany({
-        where: {
-            id: {
-                in: productIds
-            },
-            isActive: true
-        },
-    })
-
-    // Creating a Map of fetched product from database. see the usage of Map(very easy)
-    const productMap = new Map(products.map(p => [p.id, p]))
-
-    // checking if the number of products ordered by the customer is equal to the number of products fetched from the database. If not, it means that one or more products are invalid or unavailable
-    if (productMap.size !== order.items.length) {
-        throw new Error("One or more products are invalid or unavailable")
-    }
-
 
     // calculating total, creating order and updating the stock
     const result = await prisma.$transaction(async (tx) => {
 
+        const productIds = order.items.map(i => i.productId) // getting product ids ordered by the customer. 
+
+        // fetching the products from the database that the customer has ordered
+        const products = await prisma.product.findMany({
+            where: {
+                id: {
+                    in: productIds
+                },
+                isActive: true
+            },
+        })
+
+        // Creating a Map of fetched product from database. see the usage of Map(very easy)
+        const productMap = new Map(products.map(p => [p.id, p]))
+
+        // checking if the number of products ordered by the customer is equal to the number of products fetched from the database. If not, it means that one or more products are invalid or unavailable
+        if (productMap.size !== order.items.length) {
+            throw new Error("One or more products are invalid or unavailable")
+        }
 
         // finding total price of the ordered items
         const total = order.items.reduce((sum, item) => {
@@ -87,7 +86,11 @@ const createOrder = async (order: ICreateOrder) => {
 }
 
 const getOrders = async () => {
-    const result = await prisma.order.findMany()
+    const result = await prisma.order.findMany({
+        include: {
+            items: true
+        }
+    })
     return result
 }
 
