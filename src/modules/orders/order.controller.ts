@@ -16,7 +16,11 @@ const createOrder = catchAsync(async (req, res) => {
 })
 
 const getOrders = catchAsync(async (req, res) => {
-    const result = await orderService.getOrders()
+
+    const page = Number(req.query.page) || 1
+    const limit = Number(req.query.limit) || 10
+
+    const result = await orderService.getOrders(page, limit)
     res.status(httpStatus.OK).json({
         success: true,
         message: 'All order retrieved successfully',

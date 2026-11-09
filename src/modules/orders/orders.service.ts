@@ -85,15 +85,37 @@ const createOrder = async (order: ICreateOrder) => {
     return result
 }
 
-const getOrders = async () => {
-    const result = await prisma.order.findMany({
-        include: {
-            items: true
-        }
-    })
-    return result
-}
+const getOrders = async (page: number, limit: number) => {
 
+    const skip = (page - 1) * limit
+
+    const [orders, totalOrders] = await Promise.all([
+        prisma.order.findMany({
+            skip,
+            take: Number(limit),
+            orderBy: {
+                createdAt: "desc"
+            },
+            include: {
+                items: true
+            }
+        }),
+
+        prisma.order.count()
+    ])
+
+    const totalPages = Math.ceil(totalOrders / limit)
+
+    return {
+        meta: {
+            page,
+            limit,
+            totalOrders,
+            totalPages
+        },
+        data: orders,
+    }
+}
 export const orderService = {
     createOrder,
     getOrders
