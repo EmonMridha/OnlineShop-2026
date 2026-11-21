@@ -93,8 +93,8 @@ const getOrders = async (page: number, limit: number) => {
     const [orders, totalOrders] = await Promise.all([
         // getting all the orders from the database.
         prisma.order.findMany({
-            skip,
-            take: Number(limit),
+            skip, // telling prisma how many records to skip
+            take: Number(limit), // telling prisma how many records to take
             orderBy: {
                 createdAt: "desc"
             },

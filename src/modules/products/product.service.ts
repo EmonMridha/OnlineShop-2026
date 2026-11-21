@@ -1,3 +1,4 @@
+import { number, promise } from "zod";
 import { prisma } from "../../lib/prisma.js";
 import { IProduct, UProduct } from "./product.interface.js";
 
@@ -19,14 +20,32 @@ const createProduct = async (payload: IProduct) => {
     return result;
 }
 
-const getAllProducts = async () => {
-    const result = await prisma.product.findMany();
+const getAllProducts = async (page: number, limit: number) => {
 
-    if (result.length === 0) {
-        throw new Error("No products found")
+    const skip = (page - 1) * limit
+
+    const [products, totalProducts] = await Promise.all([
+        prisma.product.findMany({
+            skip,
+            take: Number(limit),
+            orderBy: {
+                createdAt: "desc"
+            }
+        }),
+        prisma.product.count()
+    ])
+
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    return {
+        meta: {
+            page,
+            limit,
+            totalProducts,
+            totalPages
+        },
+        data: products,
     }
-
-    return result;
 }
 
 const getSingleProduct = async (id: string) => {
