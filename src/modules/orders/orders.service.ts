@@ -89,7 +89,9 @@ const getOrders = async (page: number, limit: number) => {
 
     const skip = (page - 1) * limit
 
+    // Promise.all runs multiple promises in parallel and returns the actual results in an array. Here we are destructuring the returned array.
     const [orders, totalOrders] = await Promise.all([
+        // getting all the orders from the database.
         prisma.order.findMany({
             skip,
             take: Number(limit),
@@ -101,6 +103,7 @@ const getOrders = async (page: number, limit: number) => {
             }
         }),
 
+        // getting total number of orders.
         prisma.order.count()
     ])
 
@@ -116,6 +119,7 @@ const getOrders = async (page: number, limit: number) => {
         data: orders,
     }
 }
+
 export const orderService = {
     createOrder,
     getOrders
