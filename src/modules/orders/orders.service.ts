@@ -62,6 +62,19 @@ const createOrder = async (order: ICreateOrder) => {
             }
         }
 
+        console.log("Order data:", {
+            customerName: order.customerName,
+            phone: order.phone,
+            address: order.address,
+            total,
+            items: order.items.map(item => ({
+                productId: item.productId,
+                productName: productMap.get(item.productId)?.name,
+                quantity: item.quantity,
+                price: productMap.get(item.productId)?.price
+            }))
+        });
+
         return await tx.order.create({
             data: {
                 customerName: order.customerName,
@@ -71,6 +84,7 @@ const createOrder = async (order: ICreateOrder) => {
                 items: {
                     create: order.items.map(item => ({
                         productId: item.productId,
+                        productName: productMap.get(item.productId)!.name,
                         quantity: item.quantity,
                         price: productMap.get(item.productId)!.price
                     }))

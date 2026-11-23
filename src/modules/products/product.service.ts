@@ -24,6 +24,7 @@ const getAllProducts = async (page: number, limit: number) => {
 
     const skip = (page - 1) * limit
 
+    // Promise.all runs multiple promises in parallel and returns the actual results in an array. Here we are destructuring the returned array.
     const [products, totalProducts] = await Promise.all([
         prisma.product.findMany({
             skip,
