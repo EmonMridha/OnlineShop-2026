@@ -19,8 +19,13 @@ const createOrder = async (order: ICreateOrder) => {
             },
         })
 
+        console.log("Products fetched:", products.length);
+        console.log("Requested products:", productIds);
+
         // Creating a Map of fetched product from database. see the usage of Map(very easy)
         const productMap = new Map(products.map(p => [p.id, p]))
+
+        console.log("Product map size:", productMap.size);
 
         // checking if the number of products ordered by the customer is equal to the number of products fetched from the database. If not, it means that one or more products are invalid or unavailable
         if (productMap.size !== order.items.length) {
@@ -31,6 +36,12 @@ const createOrder = async (order: ICreateOrder) => {
         const total = order.items.reduce((sum, item) => {
 
             const product = productMap.get(item.productId)! // getting the product details from productMap
+
+            console.log("Checking product:", {
+                name: product.name,
+                requestedQuantity: item.quantity,
+                availableStock: product.stock
+            });
 
             if (product.stock < item.quantity) {
                 throw new Error(`Insufficient stock for ${product.name}. It's stock is only ${product.stock}`)
@@ -54,6 +65,11 @@ const createOrder = async (order: ICreateOrder) => {
                     }
                 }
             })
+
+            console.log("Stock update result:", {
+                productId: item.productId,
+                updatedCount: updateProductStock.count
+            });
 
             if (updateProductStock.count === 0) {
                 throw new Error(
