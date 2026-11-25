@@ -3,9 +3,6 @@ import { ICreateOrder } from "./orders.interface.js"
 
 const createOrder = async (order: ICreateOrder) => {
 
-    console.log("===== CREATE ORDER SERVICE STARTED =====");
-    console.log("Received order:", order);
-
     // calculating total, creating order and updating the stock
     const result = await prisma.$transaction(async (tx) => {
 
@@ -21,13 +18,8 @@ const createOrder = async (order: ICreateOrder) => {
             },
         })
 
-        console.log("Products fetched:", products.length);
-        console.log("Requested products:", productIds);
-
         // Creating a Map of fetched product from database. see the usage of Map(very easy)
         const productMap = new Map(products.map(p => [p.id, p]))
-
-        console.log("Product map size:", productMap.size);
 
         // checking if the number of products ordered by the customer is equal to the number of products fetched from the database. If not, it means that one or more products are invalid or unavailable
         if (productMap.size !== order.items.length) {
@@ -68,30 +60,12 @@ const createOrder = async (order: ICreateOrder) => {
                 }
             })
 
-            console.log("Stock update result:", {
-                productId: item.productId,
-                updatedCount: updateProductStock.count
-            });
-
             if (updateProductStock.count === 0) {
                 throw new Error(
                     `Insufficient stock or product unavailable: ${item.productId}`
                 )
             }
         }
-
-        console.log("Order data:", {
-            customerName: order.customerName,
-            phone: order.phone,
-            address: order.address,
-            total,
-            items: order.items.map(item => ({
-                productId: item.productId,
-                productName: productMap.get(item.productId)?.name,
-                quantity: item.quantity,
-                price: productMap.get(item.productId)?.price
-            }))
-        });
 
         return await tx.order.create({
             data: {
