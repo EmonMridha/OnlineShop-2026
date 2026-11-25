@@ -3,6 +3,8 @@ import { ICreateOrder } from "./orders.interface.js"
 
 const createOrder = async (order: ICreateOrder) => {
 
+    console.log("===== CREATE ORDER SERVICE STARTED =====");
+    console.log("Received order:", order);
 
     // calculating total, creating order and updating the stock
     const result = await prisma.$transaction(async (tx) => {
